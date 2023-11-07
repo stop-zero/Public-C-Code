@@ -1,10 +1,8 @@
-# <a href = "https://github.com/stop-zero/Public-C-Code/wiki">Public C Code 분석 과제 </a>
+# <a href = "https://github.com/stop-zero/Public-C-Code/wiki">Public C Code 분석 과제 - [git wiki](https://github.com/stop-zero/Public-C-Code/wiki) </a>
 
 - 과목명 : 운영체제[002]
 - 학번 : 20200318
 - 이름 : 정지영
-
-## [git wiki](https://github.com/stop-zero/Public-C-Code/wiki)
 
 ---
 
