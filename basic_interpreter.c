@@ -1,57 +1,76 @@
-/* Basic Interpreter by H�seyin Uslu raistlinthewiz@hotmail.com */
+/* Basic Interpreter by H�seyin Uslu raistlinthewiz@hotmail.com */
 /* Code licenced under GPL */
 
+// 1. include문
 
+// stdio.h : 소스 코드 표준 입출력과 관련되어 있으며 헤더파일을 호출하여 사용한다.
 #include <stdio.h>
+
+// conio.h : 콘솔 입출력 함수를 제공하는 헤더이다.
 #include <conio.h>
+
+// string.h : 메모리 블록이나 문자열(문자열의 조작, 복사, 비교 및 검색)을 다룰 수 있는 함수를 제공한다.
 #include <string.h>
+
+// stdlib.h : 프로그램 실행 관련 함수, 동적 메모리 관리 등의 함수 제공한다.
 #include <stdlib.h>
+
+// ctype.h : 아스키 코드 값이 문자와 숫자 등을 판별하는 함수와 대/소문자로 변환하는 함수 제공한다.
 #include <ctype.h>
 
+
+// 연결 리스트 노드 구조체
 struct node{
-	int type;
-/* system stack-> 1 for variable, 2 for function , 3 for function call
-4 for begin 5 for end */
-
-	char exp_data;
-	int val;
-	int line;
-	struct node * next;
-
+	int type;	// 노드의 타입
+	har exp_data;	   // 문자 타입으로 주로 한글자의 데이터를 저장한다.
+	int val;		   // 정수 값, 노드에 연결된 값에 대한 정보 저장한다.
+	int line;		   // 노드가 속한 라인의 정보, 코드 어느 부분에서 노드가 생성되었는지 추척한다.
+	struct node *next; // 연결 리스트의 다음 노트를 가리키는 포인터이다.
 };
 
+// typeof : 이미 존재하는 타입에 새로운 이름을 설정한다.
 typedef struct node Node;
 
+// 연결 리스트를 기반으로 스택 구조체를 구현한다.
 struct stack{
-	Node * top;
+	Node * top;	// 연결리스트 노드의 top를 가리키는 포인터이며 연결리스트를 스택 형식으로 변환한다. 
 };
 
-typedef  struct stack Stack;
+// stack의 이름은 Stack이다. Stack을 사용하여 변수 및 포인터를 선언할 수 있다. 
+typedef struct stack Stack;
 
-
+// 연산자 노드 구조체
 struct opnode{
-	char op;
-	struct opnode * next;
+	char op;	// 연산자를 저장하는 문자형 필드이다.
+	struct opnode * next;	// 다음 연산자 노드를 가리키는 포인터이다. 
 };
+
+// opnode의 이름은 opNode이다. opNode을 사용하여 변수 및 포인터를 선언할 수 있다. 
 typedef struct opnode opNode;
 
+// 연산자 스택 구조체
 struct opstack{
-	opNode * top;
+	opNode * top;	// 스택의 top 연산자 노드를 가리키는 포인터이다.
 };
 
+// opstack의 이름은 OpStack이다. OpStack을 사용하여 변수 및 포인터를 선언할 수 있다. 
 typedef struct opstack OpStack;
 
+// 후위 표기법 노드 구조체
 struct postfixnode{
 	int val;
-	struct postfixnode * next;
+	struct postfixnode * next;	// 다음 후위 표기법 노드를 가리키는 포인터이다.
 };
 
+// postfixnode의 이름은 Postfixnode이다. Postfixnode을 사용하여 변수 및 포인터를 선언할 수 있다. 
 typedef struct postfixnode Postfixnode;
 
+// 후위 표기법 스택 구조체
 struct postfixstack{
-	Postfixnode * top;
+	Postfixnode * top;	// 스택의 top 연산자 노들르 가리키는 포인터이다.
 	};
 
+// postfixstack의 이름은 PostfixStack이다. PostfixStack을 사용하여 변수 및 포인터를 선언할 수 있다. 
 typedef struct postfixstack PostfixStack;
 
 
@@ -209,17 +228,17 @@ return 0;
 
 int main(int argc,char ** argv)
 {
+	// 문자열 데이터를 저장하는 배열
 	char line[4096];
 	char dummy[4096];
 	char lineyedek[4096];
-
 	char postfix[4096];
 
-	char * firstword;
+	char * firstword;	
 
 
-
-//	int i;
+	// 정수형 변수, 정보 저장
+	// int i;
 	int val1;
 	int val2;
 
@@ -228,18 +247,17 @@ int main(int argc,char ** argv)
 	int LastFunctionReturn=-999;
 	int CalingFunctionArgVal;
 
-	Node tempNode;
+	Node tempNode;	// 연결 리스트이 임시 노드로 Node 구조체 변수 
 
+	OpStack * MathStack; // OpStack의 주소값을 MathStack에 저장 
 
-	OpStack * MathStack;
+	FILE *filePtr;	// 처리할 파일을 가리키는 파일 포인터
 
-	FILE *filePtr;
-
-	PostfixStack * CalcStack;
+	PostfixStack * CalcStack; // PostfixStack의 주소값을 CalcStack에 저장 
 
 	int resultVal;
 
-	Stack * STACK;
+	Stack * STACK;	// Stack의 주소값을 STACK에 저장 
 
 	int curLine=0;
 	int foundMain=0;
@@ -249,8 +267,9 @@ int main(int argc,char ** argv)
 	MathStack->top=NULL;
 	CalcStack->top=NULL;
 	STACK->top=NULL;
-	clrscr();
+	clrscr();	// 화면 초기화
 
+	//argc가 2이면
 	if (argc!=2)
 	{
 		/* if argument count is =1 */
@@ -258,10 +277,6 @@ int main(int argc,char ** argv)
 		printf("Usage: %s <inputfile.spl>",argv[0]);
 		return 1;
 	}
-
-
-
-
 
 	/* open the file */
 
