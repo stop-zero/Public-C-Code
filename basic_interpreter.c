@@ -109,54 +109,56 @@ Stack *Push(Node sNode, Stack *stck) // Push 함수 : 스택에 새로운 노드
 
 OpStack *PushOp(char op, OpStack *opstck)
 {
-	opNode *newnode;
-	if ((newnode = (opNode *)malloc(sizeof(opNode))) == NULL)
+	opNode *newnode;										  // opNode를 newnode 변수에 저장
+	if ((newnode = (opNode *)malloc(sizeof(opNode))) == NULL) // newnode가 opNode 타입 사이즈만큼 메모리 할당, 할당 메모리가 NULL이면 실패한 것
 	{
-		printf("ERROR, Couldn't allocate memory...");
-		return NULL;
+		printf("ERROR, Couldn't allocate memory..."); // 메모리 할당 실패
+		return NULL;								  // 함수 끝
 	}
-	else
+	else // 메모리 할당에 성공하면
 	{
-		newnode->op = op;
-		newnode->next = opstck->top;
-		opstck->top = newnode;
-		return opstck;
+		newnode->op = op;			 // newnode에 op 값을 설정, op는 newnode가 가리키는 문자열
+		newnode->next = opstck->top; // newnode의 다음 노드를 opstack의 top으로 설정
+		opstck->top = newnode;		 // opstack의 top은 newnode
+		return opstck;				 // 할당한 메모리의 첫번째 주소 반환
 	}
 }
 
-char PopOp(OpStack *opstck)
+char PopOp(OpStack *opstck) // OpStack을 opstack 변수에 주소를 저장
 {
-	opNode *temp;
-	char op;
-	if (opstck->top == NULL)
+	opNode *temp;			 // opNode형 자료를 temp에 주소를 저장
+	char op;				 // 문자형 변수 생성
+	if (opstck->top == NULL) // opstack 스택의 top이 NULL이면
 	{
-		printf("ERROR, empty stack...");
+		printf("ERROR, empty stack..."); // 스택이 비어있는 상태
 	}
-	else
+	else // opstack 스택의 top이 NULL가 아니라면
 	{
-		op = opstck->top->op;
-		temp = opstck->top;
-		opstck->top = opstck->top->next;
-		free(temp);
-		return op;
+		op = opstck->top->op;			 // opstck의 top에 있는 op가 가리키는 값
+		temp = opstck->top;				 // opstck에 있는 top이 가리키는 값
+		opstck->top = opstck->top->next; // opstck의 top은 그 다음 opNode를 가리키도록 변경
+		free(temp);						 // 임시로 값을 가리키고 있던 temp 변수에 할당되었던 메모리 공간 해제
+		return op;						 // op 반환
 	}
-	return NULL;
+	return NULL; // 스택이 비어 있거나 오류 발생 시 반환값 없음
 }
 
 PostfixStack *PushPostfix(int val, PostfixStack *poststck)
+// val: 스택에 푸시할 정수값
+// poststck: 후위 표기법 스택의 포인터
 {
 	Postfixnode *newnode;
 	if ((newnode = (Postfixnode *)malloc(sizeof(Postfixnode))) == NULL)
 	{
-		printf("ERROR, Couldn't allocate memory...");
+		printf("ERROR, Couldn't allocate memory..."); // 메모리 할당 오류 메시지 출력
 		return NULL;
 	}
 	else
 	{
-		newnode->val = val;
-		newnode->next = poststck->top;
-		poststck->top = newnode;
-		return poststck;
+		newnode->val = val;			   // 새로운 노드의 'val' 필드에 전달된 정수 값 'val'을 저장
+		newnode->next = poststck->top; // 새로운 노드의 'next'는 현재 스택의 최상단 노드를 가리킨다.
+		poststck->top = newnode;	   // 스택의 최상단을 새로운 노드로 변경
+		return poststck;			   // 변경된 poststck 반환
 	}
 }
 
@@ -164,19 +166,19 @@ char PopPostfix(PostfixStack *poststck)
 {
 	Postfixnode *temp;
 	int val;
-	if (poststck->top == NULL)
+	if (poststck->top == NULL) // 스택이 비어있는지 확인
 	{
 		printf("ERROR, empty stack...");
 	}
 	else
 	{
-		val = poststck->top->val;
-		temp = poststck->top;
-		poststck->top = poststck->top->next;
-		free(temp);
-		return val;
+		val = poststck->top->val;			 // top의 값 가져옴
+		temp = poststck->top;				 // top의 주소를 temp에 저장
+		poststck->top = poststck->top->next; // top 노드를 다음 노드로 변경
+		free(temp);							 // 이전 할당 노드 메모리 해제
+		return val;							 // 값 반환
 	}
-	return NULL;
+	return NULL; // 스택이 비어있으면 NULL 값 반환
 }
 
 void Pop(Node *sNode, Stack *stck) // Pop : 해당 노드의 데이터를 sNode로 복사한다.
@@ -201,33 +203,20 @@ void Pop(Node *sNode, Stack *stck) // Pop : 해당 노드의 데이터를 sNode�
 	}
 }
 
-int isStackEmpty(OpStack *stck)
+int isStackEmpty(OpStack *stck) // stack에 OpStack 주소 할당
 {
-	if (stck->top == 0)
-		return 1;
+	if (stck->top == 0) // 스택의 최상단(top)이 0이면
+		return 1;		// 1반환
 	return 0;
 }
 
-/*void printAllStack(Stack * stck)
+int Priotry(char operator) // int형 함수 Priotry는 문자형 operator을 파라미터로 받는다.
 {
-	Node tempNode;
-	printf("\n------------------\n");
-	printf("dumping the stack...\n");
-	Pop(&tempNode,stck);
-	printf("exp=%c type=%d val=%d 	line=%d\n",tempNode.exp_data,tempNode.type,tempNode.val,tempNode.line);
-	while( (stck->top!=NULL) ) {
-		Pop(&tempNode,stck);
-		printf("exp=%c type=%d val=%d 				line=%d\n",tempNode.exp_data,tempNode.type,tempNode.val,tempNode.line);
-	}
-} */
-
-int Priotry(char operator)
-{
-	if ((operator== '+') | (operator== '-'))
-		return 1;
-	else if ((operator== '/') | (operator== '*'))
-		return 2;
-	return 0;
+	if ((operator== '+') | (operator== '-'))	  // 만약 연산자가 + 또는 - 이면
+		return 1;								  // 1을 반환한다.
+	else if ((operator== '/') | (operator== '*')) // 연산자가 / 또는 * 이면
+		return 2;								  // 2를 반환한다.
+	return 0;									  // 다른 경우 0을 반환한다.
 }
 
 int main(int argc, char **argv)
@@ -316,7 +305,7 @@ int main(int argc, char **argv)
 		// strcmpi 계산이 0이 되면 문자열이 같은 것, 1이 되면 다른 경우이다.
 		// if 문이 참이 되려면 안에 있는 값이 0이 아닌 값이어야 한다.
 		// 두 문자열이 같으면 0이 반환되기에 이를 1로 바꾸기 위해 not 연산자를 붙였다.
-		if (!strcmpi("begin\n", line) | !strcmpi("begin", line)) // line이 begin\n 또는 begin이라면 수행한다.
+		if (!strcmpi("begin\n", line) | !strcmpi("begin", line)) // 1. line이 begin\n 또는 begin이라면 수행한다.
 		{
 			if (foundMain) // int foundMain=0으로 설정되어 있는 상태
 			{
@@ -324,7 +313,7 @@ int main(int argc, char **argv)
 				STACK = Push(tempNode, STACK); // STACK은 현재 가장 top을 말하고, STACK의 top dp tempNode를 Push한다.
 			}
 		}
-		else if (!strcmpi("end\n", line) | !strcmpi("end", line)) // line이 end 또는 end\n라면 수행한다.(대소문자를 구분하지 않음)
+		else if (!strcmpi("end\n", line) | !strcmpi("end", line)) // 2. line이 end 또는 end\n라면 수행한다.(대소문자를 구분하지 않음)
 		{
 			if (foundMain) // int foundMain=0으로 설정되어 있는 상태
 			{
@@ -371,93 +360,97 @@ int main(int argc, char **argv)
 				}
 			}
 		}
-		else	// begin 또는 end가 없다면
+		else // 3. begin 또는 end가 없다면
 		{
 			// we need to tokinize
-			firstword = strtok(line, " ");	// line 별로 공백을 기준으로 문자열을 잘라서 firstword에 할당한다.
+			firstword = strtok(line, " "); // line 별로 공백을 기준으로 문자열을 잘라서 firstword에 할당한다.
 
-			if (!strcmpi("int", firstword))	// 자른 문자열 중 'int'와 같다면 0인데 ! 붙여서 if문을 참(1)으로 만든다.
+			if (!strcmpi("int", firstword)) // 3-1. 자른 문자열 중 'int'와 같다면 0인데 ! 붙여서 if문을 참(1)으로 만든다.
 			{
 				if (foundMain)
 				{
-					tempNode.type = 1; // tempNode의 타입을 1로 설정
-					firstword = strtok(NULL, " ");	// 이전에 구분자 찾았던 문자열 주소에서부터 토근화하여
-					tempNode.exp_data = firstword[0];	// exp_data에 저장한다.
+					tempNode.type = 1;				  // tempNode의 타입을 1로 설정
+					firstword = strtok(NULL, " ");	  // 이전에 구분자 찾았던 문자열 주소에서부터 토근화하여
+					tempNode.exp_data = firstword[0]; // exp_data에 저장한다.
 
-					firstword = strtok(NULL, " ");	// 다음 문자열부터 공백을 기준으로 구분자를 다시 찾기 시작한다. 
+					firstword = strtok(NULL, " "); // 다음 문자열부터 공백을 기준으로 구분자를 다시 찾기 시작한다.
 
 					/* check for = */
-					if (!strcmpi("=", firstword))	// 찾다가 = 를 발견하면
+					if (!strcmpi("=", firstword)) // 찾다가 = 를 발견하면
 					{
-						firstword = strtok(NULL, " ");	// = 다음 단어를 토큰화하고,
+						firstword = strtok(NULL, " "); // = 다음 단어를 토큰화하고,
 					}
 
-					tempNode.val = atoi(firstword);	// firstword를 정수 타입으로 반환하고
-					tempNode.line = 0;	// 0번째 줄로 설정한다.
-					STACK = Push(tempNode, STACK);	// 스택에 Push하여 해당 정보를 저장한다. 
+					tempNode.val = atoi(firstword); // firstword를 정수 타입으로 반환하고
+					tempNode.line = 0;				// 0번째 줄로 설정한다.
+					STACK = Push(tempNode, STACK);	// 스택에 Push하여 해당 정보를 저장한다.
 				}
 			}
-			else if (!strcmpi("function", firstword))
+			else if (!strcmpi("function", firstword)) // 3-2. 자른 문자열 중 function이 있다면
 			{
-				tempNode.type = 2;
-				firstword = strtok(NULL, " ");
-				tempNode.exp_data = firstword[0];
-				tempNode.line = curLine;
-				tempNode.val = 0;
-				STACK = Push(tempNode, STACK);
+				tempNode.type = 2;				  // tempNode의 타입을 2로 설정
+				firstword = strtok(NULL, " ");	  // 이전에 구분자 찾았던 문자열 주소에서부터 토근화하여
+				tempNode.exp_data = firstword[0]; // exp_data에 firstword 리스트 중 0번째에 저장한다.
+				tempNode.line = curLine;		  // Line 정보를 curline으로 설정
+				tempNode.val = 0;				  // val 상태는 0으로 설정
+				STACK = Push(tempNode, STACK);	  // STACK에 tempNode를 Push
 
 				if ((firstword[0] == 'm') & (firstword[1] == 'a') & (firstword[2] == 'i') & (firstword[3] == 'n'))
 				{
-					/*printf("Found function main() in line %d. Starting to running the script...\n",curLine);*/
-					foundMain = 1;
+					// 만약 firstword의 [0],[1],[2],[3]이 차례로 "main" 함수인 경우
+					/*printf("Found function main() in line %d. Starting to run the script...\n", curLine);*/
+					// "main" 함수를 찾았다는 메시지 출력 (위 주석 처리된 부분)
+					foundMain = 1; // foundMain을 1로 설정한다.
 				}
 				else
 				{
 					if (foundMain)
 					{
-						firstword = strtok(NULL, " ");
-						tempNode.type = 1;
-						tempNode.exp_data = firstword[0];
-						tempNode.val = CalingFunctionArgVal;
-						tempNode.line = 0;
-						STACK = Push(tempNode, STACK);
+						firstword = strtok(NULL, " ");		 // 다음 문자를 계속 같는 중
+						tempNode.type = 1;					 // tempNode의 타입을 1로 설정
+						tempNode.exp_data = firstword[0];	 // firstword 0번째 데이터
+						tempNode.val = CalingFunctionArgVal; // int형 변수를 val에
+						tempNode.line = 0;					 // line은 0으로
+						STACK = Push(tempNode, STACK);		 // 위 정보들을 STACK에 tempNode를 Push
 					}
 				}
 			}
-			else if (firstword[0] == '(')
+			else if (firstword[0] == '(') // 3-3. firstword[0]이 (이면
 			{
 
 				if (foundMain)
 				{
-
+					// 변수 설정
 					int i = 0;
 					int y = 0;
 
-					MathStack->top = NULL;
+					MathStack->top = NULL; // MathStack의 top을 NULL로 초기화시킨다.
 					/* now make the postfix calculcation */
+					// postfix 연산 생성
 
-					while (lineyedek[i] != '\x0')
+					// line을 linevedek으로 복사했었다.
+					while (lineyedek[i] != '\x0') // lineyedek 리스트 값이 '\x0'이 아니면 반복문을 실행한다
 					{
 						/* evulate the function */
-						if (isdigit(lineyedek[i]))
+						if (isdigit(lineyedek[i])) // 3.1. isdigit : char 타입이 10진수 숫자로 변경이 가능하면 참이고 안되면 0을 반환한다.
 						{
-							postfix[y] = lineyedek[i];
-							y++;
+							postfix[y] = lineyedek[i]; // postfix의 y번지에 lineyedek의 i번째를 복사해서 넣는다.
+							y++;					   // y에 1씩 더하면서 반복문 수행
 						}
-						/*	else if (lineyedek[i]=='(')
+						/*	else if (lineyedek[i]=='(')	// 3.2. lineyedek의 i번째가 (이면
 					   {
-						   MathStack=PushOp(lineyedek[i],MathStack);
+						   MathStack=PushOp(lineyedek[i],MathStack);	// PushOp으로 MathStack에 추가
 					   }*/
 
-						else if (lineyedek[i] == ')')
+						else if (lineyedek[i] == ')') // 3.3. lineyedek의 i번째가 )이면
 						{
-							if (!isStackEmpty(MathStack))
+							if (!isStackEmpty(MathStack)) // MathStack의 스택이 비어있는지 검사 후 비어있지 않다면,
 							{
-								postfix[y] = PopOp(MathStack);
-								y++;
+								postfix[y] = PopOp(MathStack); // postfix[y]번째 char을 PopOp함수를 사용하여 삭제한다
+								y++;						   // y에 1씩 더하면서 반복문 수행
 							}
 						}
-						else if ((lineyedek[i] == '+') | (lineyedek[i] == '-') | (lineyedek[i] == '*') | (lineyedek[i] == '/'))
+						else if ((lineyedek[i] == '+') | (lineyedek[i] == '-') | (lineyedek[i] == '*') | (lineyedek[i] == '/')) // 3.4 lineyedek[i]가 연산자이면
 						{
 							/*operators*/
 							if (isStackEmpty(MathStack))
@@ -489,58 +482,53 @@ int main(int argc, char **argv)
 								}
 							}
 						}
-						else if (isalpha(lineyedek[i]) > 0)
+						else if (isalpha(lineyedek[i]) > 0) // 3.5. isalpha 함수가 알파벳인지 확인해주고 대문자는 1, 소문자는 2, 알파벳이 아닌 것은 0으로 반환한다. 0보다 큰 경우니 알파벳이면 if문을 실행한다.
 						{
 							int codeline = 0;
 							int dummyint = 0;
-							/*look if it's a variable or function call 						*/
+							/*look if it's a variable or function call = 변수인지 함수 호출인지 확인*/
 							int retVal = 0;
 							retVal = GetVal(lineyedek[i], &codeline, STACK);
-							if ((retVal != -1) & (retVal != -999))
+							if ((retVal != -1) & (retVal != -999)) // 3.5.1. GetVal 함수의 반환 값이 -1 이랑 -999가 아닌 경우
 							{
-								/* if variable */
-								postfix[y] = retVal + 48; /* in ascii table numeric values start from 48 */
-								y++;
+								// 변수인 경우
+								postfix[y] = retVal + 48; // 숫자형 변수를 찾는 것이므로 아스키코드에서 0=48부터 시작한다.
+								y++;					  // y++해서 다음 진행
 							}
-							else
+							else // 3.5.2. GetVal 함수의 반환 값이 -1 이랑 -999라면
 							{
 
-								if (LastFunctionReturn == -999)
+								if (LastFunctionReturn == -999) // LastFunctionReturn이 -999라면
 								{
 
-									/* if function */
+									// 함수일 때
 									/* add to our system stack that we are making a call to function */
 									int j;
-									tempNode.type = 3;
-									tempNode.line = curLine;
-									STACK = Push(tempNode, STACK);
+									tempNode.type = 3;			   // tempNode 타입을 3으로 변경
+									tempNode.line = curLine;	   // line은 curline으로 설정
+									STACK = Push(tempNode, STACK); // STACK에 함수 호출 정보 Push
 
-									/* get function's arguments value */
+									/* 함수의 인수 값 가져오기 */
 									CalingFunctionArgVal = GetVal(lineyedek[i + 2], &dummyint, STACK);
 
-									fclose(filePtr);
-									filePtr = fopen(argv[1], "r");
-									curLine = 0;
-									/* file reversed to start postion */
-									/* now go codeline lines to go, to the functions line */
+									fclose(filePtr);			   // 파일 닫기
+									filePtr = fopen(argv[1], "r"); // 파일 다시 열기
+									curLine = 0;				   // 현재 라인 위치를 0으로 설정하고 파일의 첫 부분으로 이동
 
-									/* !!!!!!!!!!!!!!! j <= codeline olabilir */
-									for (j = 1; j < codeline; j++)
+									for (j = 1; j < codeline; j++) // 첫줄부터 마지막줄까지 반복
 									{
 										fgets(dummy, 4096, filePtr); /* read the file by Line by Line */
-										curLine++;
+										curLine++;					 // 한 줄씩 읽는 과정
 									}
 
-									WillBreak = 1;
-									break;
+									WillBreak = 1; // WillBreak=0에서 1로 전환
+									break;		   // 함수 종료
 								}
-								else
-
+								else // 리턴값이 -1 and -999가 아니고 LastFunctionReturn=-999도 아니라면
 								{
-
-									postfix[y] = LastFunctionReturn + 48; /* in ascii table numeric values start from 48 */
-									y++;
-									i = i + 3;
+									postfix[y] = LastFunctionReturn + 48; // LastFunctionReturn + 48 을 연산하고
+									y++;								  // y++ 해서 다음으로 이동
+									i = i + 3;							  // 다음 문자로 이동
 									LastFunctionReturn = -999;
 								}
 							}
@@ -549,36 +537,27 @@ int main(int argc, char **argv)
 						i++;
 					}
 
-					if (WillBreak == 0)
+					if (WillBreak == 0) // WillBreak가 0이면
 					{
-						/* get out items left in the mathstack */
+						/* MathStack의 top이 0을 가리킬 때까지 빼기 */
 						while (isStackEmpty(MathStack) == 0)
 						{
-
-							/* add the poped operator to the postfix */
-							postfix[y] = PopOp(MathStack);
+							postfix[y] = PopOp(MathStack); // pop되는 연산자를 postfix[y]에 저장
 							y++;
 						}
+						postfix[y] = '\0'; // 스택에 item이 안남으면 postfix[y], 마지막에 \0 넣어 종료
+						// postfix 연산 시작
+						i = 0; // i를 0으로 초기화하여 스택 처음부터 돌기
 
-						postfix[y] = '\0';
-
-						// MathStack=FreeAll(MathStack);
-
-						/* now calculate the postfix */
-						/*printf("\nCURRENT POSTFIX=%s\n",postfix);*/
-
-						i = 0;
-
-						CalcStack->top = NULL;
-						while (postfix[i] != '\x0')
+						CalcStack->top = NULL;		// CalcStack의 top: 비어있음
+						while (postfix[i] != '\x0') // postfix[i]가 공백 혹은 \0이 아닐 동안 반복분 실행
 						{
 							if (isdigit(postfix[i]))
-							{
-								/* push to stack */
+							{ // 문자가 숫자인 경우, CalcStack에 Push
 								CalcStack = PushPostfix(postfix[i] - '0', CalcStack);
 							}
 							else if ((postfix[i] == '+') | (postfix[i] == '-') | (postfix[i] == '*') | (postfix[i] == '/'))
-							{
+							{ // 문자가 연산자인 경우, CalcStack에서 피연산자를 PopPostfix하고 연산을 수행한 후 결과를 다시 CalcStack에 PushPostfix한다.
 								val1 = PopPostfix(CalcStack);
 
 								val2 = PopPostfix(CalcStack);
@@ -603,7 +582,6 @@ int main(int argc, char **argv)
 							}
 							i++;
 						}
-
 						// CalcStack=FreeAll(CalcStack);
 						LastExpReturn = CalcStack->top->val;
 					}
@@ -613,13 +591,13 @@ int main(int argc, char **argv)
 		}
 	}
 
-	fclose(filePtr);
+	fclose(filePtr); // filePtr 닫기
 
 	// printAllStack(STACK);
-	STACK = FreeAll(STACK);
+	STACK = FreeAll(STACK); // 메모리 해제
 
 	printf("\nPress a key to exit...");
-	getch();
+	getch(); // 사용자가 키를 누를 때까지 대기하다 종료
 	return 0;
 }
 
@@ -628,21 +606,20 @@ Stack *FreeAll(Stack *stck)
 	Node *temp;
 	Node *head;
 
-	if (stck->top != NULL)
+	if (stck->top != NULL) // 스택이 비어있지 않으면
 	{
-		head = stck->top;
+		head = stck->top; // 헤드를 top으로
 		do
 		{
 
-			temp = head;
-			head = head->next;
-			free(temp);
-
-		} while (head->next != NULL);
+			temp = head;			  // temp를 현재 head 노드로
+			head = head->next;		  // head는 다음 노드로
+			free(temp);				  // temp가 가리키는 노드의 메모리 해제
+		} while (head->next != NULL); // 다음 노드가 없을 때까지 반복
 	}
-
-	return NULL;
+	return NULL; // 모든 메모리 해제 후, 스택 포인터를 NULL로 설정하고 스택을 NULL로 설정
 }
+
 int GetLastFunctionCall(Stack *stck) // int형 변수 GetLastFunctionCall 생성, 스택 포인터
 {
 	Node *head; // Node형 head 변수의 주소를 알려주는 포인터
@@ -673,54 +650,51 @@ int GetLastFunctionCall(Stack *stck) // int형 변수 GetLastFunctionCall 생성
 int GetVal(char exp_name, int *line, Stack *stck)
 {
 
-	Node *head;
-	*line = 0;
-	if (stck->top == NULL)
+	Node *head;			   // 노드의 헤드로 주소 지정
+	*line = 0;			   // line은 0으로 설정
+	if (stck->top == NULL) // 스택의 top이 NULL이면 스택은 비어있는 상태
 	{
-		printf("ERROR, empty stack...");
+		printf("ERROR, empty stack..."); // "에러, 빈 상태입니다."
 	}
 	else
 	{
-		head = stck->top;
+		head = stck->top; // 빈 스택이 아니라면 헤드는 스택의 top을 가리킨다.
 		do
 		{
-			if (head->exp_data == exp_name)
+			if (head->exp_data == exp_name) // 헤드가 가리키고 있는 곳의 exp_data가 exp_name이랑 같다면
 			{
 
-				if (head->type == 1)
+				if (head->type == 1) // 헤드의 타입이 1이면
 				{
 					/* return the variables value */
-					return head->val;
+					return head->val; // 해당 스택의 val 변수를 반환
 				}
-				else if (head->type == 2)
+				else if (head->type == 2) // 헤드의 타입이 2이면
 				{
-					*line = head->line;
-					return -1;
-					/* it's a function so return -1 */
+					*line = head->line; // 정수형 변수 line : 해당 스택의 변수로 새로 지정
+					return -1;			// 함수니까 -1반환
 				}
 			}
-			else
+			else // 헤드가 가리키고 있는 곳의 exp_data가 exp_name이랑 다르면
 			{
-				head = head->next;
+				head = head->next; // head는 가리키는 것을 next로 이동
 			}
-		} while (head->next != NULL);
+		} while (head->next != NULL); // head->next가 더 이상 다음 노드가 없을 때까지 반복
 		/* check agin once more */
 		if (head->exp_data == exp_name)
 		{
 
-			if (head->type == 1)
+			if (head->type == 1) // 헤드의 타입이 1이면
 			{
 				/* return the variables value */
-				return head->val;
+				return head->val; // 해당 스택의 val 변수를 반환
 			}
-			else if (head->type == 2)
+			else if (head->type == 2) // 헤드의 타입이 2이면
 			{
-				*line = head->line;
-				return -1;
-				/* it's a function so return -1 */
+				*line = head->line; // 함수 호출 라인 정보를 정수형 변수 line에 저장
+				return -1;			// 함수니까 -1 반환
 			}
 		}
 	}
-
-	return -999;
+	return -999; // -999 반환
 }
